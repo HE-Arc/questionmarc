@@ -10,7 +10,7 @@ class HomeController extends Controller
 {
     public function index() {
 
-        return View('welcome', [
+        return View('index', [
             'questions' => Question::paginate(5)
         ]);
     }

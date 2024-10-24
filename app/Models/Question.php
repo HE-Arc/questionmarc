@@ -14,4 +14,8 @@ class Question extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function Module() {
+        return $this->belongsTo(Module::class);
+    }
+
 }

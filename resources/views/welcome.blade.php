@@ -948,11 +948,14 @@
                             <tbody>
                                 @foreach ($questions as $question)
                                     <tr>
-                                        <td>{{ $question->question }}</td>
+                                        <td>{{ $question->title }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="d-flex justify-content-center">
+                            {!! $questions->links() !!}
+                        </div>
                     </main>
 
                     <footer class="py-16 text-center text-sm text-black dark:text-white/70">
@@ -962,5 +965,6 @@
             </div>
         </div>
     </body>
+
 
     </html>

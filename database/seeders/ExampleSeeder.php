@@ -14,16 +14,25 @@ class ExampleSeeder extends Seeder
      */
     public function run(): void
     {
+
+        $module = [
+            'filiere_name' => 'ISC',
+            'name' => 'Web application',
+            'num_ue' => '2222.2',
+        ];
+
+        DB::table('modules')->insert($module);
+
         // Creating 10 questions
         $questions = [];
         for ($i = 0; $i < 10; $i++) {
             $questions[] = [
                 'title' => 'Question ' . $i,
                 'content' => 'Content of question ' . $i,
-                'user_id' => 1,
+                'author_id' => 1,
                 'module_id' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_date' => now(),
+                'resolved' => false,
             ];
         }
 
