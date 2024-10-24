@@ -9,6 +9,7 @@ class Question extends Model
 {
 
     use HasFactory;
+    public $timestamps = false;
 
     public function User() {
         return $this->belongsTo(User::class);
