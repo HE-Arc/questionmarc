@@ -1,23 +1,21 @@
 <x-app-layout>
-    <table class="min-w-full divide-y divide-gray-200">
-        <caption class="caption-top">
-            <h2 class="text-2xl font-semibold text-gray-900">Questions</h2>
-        </caption>
-        <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Questions</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contenu</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+    <div class="flex justify-center">
+        <div class="grid grid-cols-1 gap-6 max-w-xl flex-1 p-6">
             @foreach ($questions as $question)
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $question->title }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ $question->content }}</td>
-                </tr>
+                <div class="bg-white shadow-md rounded-lg p-6 flex-1">
+                    <div class="flex items-center mb-4">
+                        <div class="text-sm font-medium text-gray-900">{{ $question->author->username}}</div>
+                    </div>
+                    <div class="mb-2">
+                        <h3 class="text-lg font-bold text-gray-900">{{ $question->title }}</h3>
+                    </div>
+                    <div class="text-gray-700">
+                        {{ $question->content }}
+                    </div>
+                </div>
             @endforeach
-        </tbody>
-    </table>
+        </div>
+    </div>
     <div class="mt-4 flex flex-col items-center">
         {!! $questions->links() !!}
     </div>

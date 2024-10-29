@@ -11,11 +11,12 @@ class Question extends Model
     use HasFactory;
     public $timestamps = false;
 
-    public function User() {
+
+    public function author() {
         return $this->belongsTo(User::class);
     }
 
-    public function Module() {
+    public function module() {
         return $this->belongsTo(Module::class);
     }
 
