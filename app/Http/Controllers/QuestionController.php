@@ -24,8 +24,9 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        return View('index', [
-            'questions' => Question::paginate(5)
+        // sending user related questions to the view
+        return view('index', [
+            'questions' => Question::with(relations: 'author')->paginate(5)
         ]);
     }
 
