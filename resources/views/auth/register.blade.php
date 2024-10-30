@@ -12,14 +12,26 @@
         <!-- Filiere -->
         <div>
             <x-input-label for="filiere" :value="__('Filiere')" />
-            <x-text-input id="filiere" name="filiere" type="text" class="mt-1 block w-full" :value="old('filiere')" required autocomplete="filiere" />
+            <select id="filiere" name="filiere" class="mt-1 block w-full" required>
+                <option value="ISC">ISC</option>
+            </select>
             <x-input-error class="mt-2" :messages="$errors->get('filiere')" />
         </div>
 
         <!-- Year -->
         <div>
             <x-input-label for="year" :value="__('Year')" />
-            <x-text-input id="year" name="year" type="text" class="mt-1 block w-full" :value="old('year')" required autocomplete="year" />
+            <input id="year" name="year" type="range" min="1" max="3" step="1" list="year-options" value="{{ old('year', 1) }}" class="mt-1 block w-full" required>
+            <datalist id="year-options">
+                <option value="1" label="1"></option>
+                <option value="2" label="2"></option>
+                <option value="3" label="3"></option>
+            </datalist>
+            <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
+                <span>1</span>
+                <span>2</span>
+                <span>3</span>
+            </div>
             <x-input-error class="mt-2" :messages="$errors->get('year')" />
         </div>
 
