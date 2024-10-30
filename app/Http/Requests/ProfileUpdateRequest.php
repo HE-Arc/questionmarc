@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\Rule;
 
-class ProfileRequest extends FormRequest
+class ProfileUpdateRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -20,7 +20,7 @@ class ProfileRequest extends FormRequest
             'username' => ['required', 'string', 'max:255', Rule::unique(User::class)->ignore($this->user())],
             'filiere'  => ['required', 'string', 'max:10'],
             'year'     => ['required', 'integer', 'min:1', 'max:3'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'profile_picture_type' => ['required', 'integer']
         ];
     }
 }
