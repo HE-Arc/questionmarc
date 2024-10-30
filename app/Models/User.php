@@ -20,7 +20,7 @@ class User extends Authenticatable
         'username',
         'filiere',
         'year',
-        'profile_picture',
+        'profile_picture_type',
         'password',
     ];
 

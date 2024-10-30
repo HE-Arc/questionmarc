@@ -5,7 +5,7 @@
                 <div class="bg-white shadow-md rounded-lg p-6 flex-1">
                     <div class="flex items-center gap-4 mb-4">
                         <div class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-                            <img src="https://robohash.org/{{$question->author->username}}.png?size=50x50" class="w-full h-full object-cover">
+                            <img src="https://robohash.org/{{$question->author->username}}.png?size=50x50&set=set{{$question->author->profile_picture_type}}" class="w-full h-full object-cover">
                         </div>
                         <div class="ml-2 font-medium dark:text-black">
                             <div>{{ $question->author->username }}</div>

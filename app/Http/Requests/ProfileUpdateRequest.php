@@ -17,10 +17,9 @@ class ProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => ['required', 'string', 'max:255', Rule::unique(User::class)->ignore($this->user())],
+            'username' => ['required', 'string', 'max:255', Rule::unique(User::class)->ignore($this->user()->id)],
             'filiere'  => ['required', 'string', 'max:10'],
             'year'     => ['required', 'integer', 'min:1', 'max:3'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ];
     }
 }

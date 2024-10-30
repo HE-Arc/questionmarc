@@ -23,6 +23,16 @@
             <x-input-error class="mt-2" :messages="$errors->get('year')" />
         </div>
 
+        <!-- Profile Picture Type -->
+        <div>
+            <x-input-label for="profile_picture_type" :value="__('Profile Picture Type')" />
+            <select id="profile_picture_type" name="profile_picture_type" class="mt-1 block w-full" required>
+                <option value="1" {{ old('profile_picture_type') == 1 ? 'selected' : '' }}>Robot</option>
+                <option value="5" {{ old('profile_picture_type') == 5 ? 'selected' : '' }}>Human</option>
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('profile_picture_type')" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
