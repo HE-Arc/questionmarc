@@ -29,7 +29,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'filiere' => 'ISC',
             'year' => '2021',
-            'profile_picture' => 'https://i.pravatar.cc/300',
+            'profile_picture_type' => 1,
         ];
     }
 

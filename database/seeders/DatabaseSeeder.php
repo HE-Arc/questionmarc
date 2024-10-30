@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'Test User',
             'filiere' => 'ISC',
             'year' => 1,
-            'profile_picture' => 'default.png',
+            'profile_picture_type' => 1,
         ]);
 
         $this->call([

@@ -43,6 +43,9 @@
                         <x-slot name="trigger">
                             <button
                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                <div class="relative w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                    <img src="https://robohash.org/{{Auth::user()->username}}.png?size=40x40&set=set{{Auth::user()->profile_picture_type}}">
+                                </div>
                                 <div>{{ Auth::user()->username }}</div>
 
                                 <div class="ms-1">

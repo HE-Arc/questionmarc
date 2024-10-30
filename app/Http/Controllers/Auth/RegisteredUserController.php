@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\ProfileRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
@@ -26,7 +26,7 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(ProfileRequest $request): RedirectResponse
+    public function store(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->validated();
 
@@ -34,7 +34,7 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'filiere'  => $request->filiere,
             'year'  => $request->year,
-            'profile_picture'  => 'wip',
+            'profile_picture_type'  => 1,
             'password' => Hash::make($request->password),
         ]);
 
