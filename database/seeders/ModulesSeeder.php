@@ -11,11 +11,11 @@ class ModulesSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void #TODO alter table to increase character limit for name
+    public function run(): void
     {
         $modules = [];
 
-        $file = './modules_v006.csv'; #TODO change the path to the file
+        $file = '../modules_v006.csv';
 
         if (($handle = fopen($file, 'r')) !== false) {
             fgetcsv($handle);
@@ -24,8 +24,7 @@ class ModulesSeeder extends Seeder
 
             while (($data = fgetcsv($handle, 1000, ';')) !== false) {
                 if (count($data) >= 9) {
-                    $data = array_map(fn($field) => mb_convert_encoding($field, 'UTF-8', 'auto'), $data); #TODO remove after alter table encoding of modules
-
+                    
                     $module = [
                         'filiere_name' => substr($data[0], 0, -1),
                         'name' => $data[8],

@@ -13,23 +13,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $modules = [
-            [
-            'filiere_name' => 'ISC',
-            'name' => 'Web application',
-            'num_ue' => '2222.2',
-            ],
-            [
-            'filiere_name' => 'ISC',
-            'name' => 'Cryptographie',
-            'num_ue' => '1111.1',
-            ]
-        ];
-
-        DB::table('modules')->insert($modules);
-
         $this->call([
             UserSeeder::class,
+            ModulesSeeder::class,
             QuestionSeeder::class,
         ]);
     }
