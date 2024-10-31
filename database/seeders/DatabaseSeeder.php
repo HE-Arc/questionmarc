@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,17 +13,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'username' => 'Test User',
-            'filiere' => 'ISC',
-            'year' => 1,
-            'profile_picture_type' => 1,
-        ]);
-
         $this->call([
-            ExampleSeeder::class,
+            UserSeeder::class,
+            ModulesSeeder::class,
+            QuestionSeeder::class,
         ]);
     }
 }
