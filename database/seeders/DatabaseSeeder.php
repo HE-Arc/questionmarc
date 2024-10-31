@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,17 +13,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $modules = [
+            [
+            'filiere_name' => 'ISC',
+            'name' => 'Web application',
+            'num_ue' => '2222.2',
+            ],
+            [
+            'filiere_name' => 'ISC',
+            'name' => 'Cryptographie',
+            'num_ue' => '1111.1',
+            ]
+        ];
 
-        User::factory()->create([
-            'username' => 'Test User',
-            'filiere' => 'ISC',
-            'year' => 1,
-            'profile_picture_type' => 1,
-        ]);
+        DB::table('modules')->insert($modules);
 
         $this->call([
-            ExampleSeeder::class,
+            UserSeeder::class,
+            QuestionSeeder::class,
         ]);
     }
 }

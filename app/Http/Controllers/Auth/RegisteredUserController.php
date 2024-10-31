@@ -6,9 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
-use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
@@ -26,9 +27,17 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(ProfileUpdateRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->validated();
+        $request->validate(
+            [
+            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
+            'filiere'  => ['required', 'string', 'max:10'],
+            'year'     => ['required', 'integer', 'min:1', 'max:3'],
+            'profile_picture_type' => ['required', 'integer'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            ]
+        );
 
         $user = User::create([
             'username' => $request->username,
