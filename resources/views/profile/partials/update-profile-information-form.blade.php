@@ -4,32 +4,29 @@
             {{ __('Profile Information') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            {{ __("Update your account's profile information.") }}
-        </p>
     </header>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="max-w-sm">
         @csrf
         @method('patch')
 
-        <div>
+        <div class="mb-4">
             <x-input-label for="username" :value="__('Username')" />
-            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" :value="old('username', $user->username)" required autofocus autocomplete="username" />
+            <x-text-input id="username" name="username" type="text" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" :value="old('username', $user->username)" required autofocus autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('username')" />
         </div>
 
-        <div>
+        <div class="mb-4">
             <x-input-label for="filiere" :value="__('Filiere')" />
-            <select id="filiere" name="filiere" class="mt-1 block w-full" required>
+            <select id="filiere" name="filiere" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
                 <option value="ISC">ISC</option>
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('filiere')" />
         </div>
 
-        <div>
+        <div class = "mb-4">
             <x-input-label for="year" :value="__('Year')" />
-            <input id="year" name="year" type="range" min="1" max="3" step="1" list="year-options" value="{{ old('year', $user->year) }}" class="mt-1 block w-full" required>
+            <input id="year" name="year" type="range" min="1" max="3" step="1" list="year-options" value="{{ old('year', $user->year) }}" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
             <datalist id="year-options">
                 <option value="1" label="1"></option>
                 <option value="2" label="2"></option>
@@ -43,26 +40,26 @@
             <x-input-error class="mt-2" :messages="$errors->get('year')" />
         </div>
 
-        <div>
+        <div class="mb-4">
             <x-input-label for="profile_picture_type" :value="__('Profile Picture Type')" />
-            <select id="profile_picture_type" name="profile_picture_type" class="mt-1 block w-full" required autocomplete="profile_picture_type">
+            <select id="profile_picture_type" name="profile_picture_type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option value="1" {{ old('profile_picture_type', $user->profile_picture_type) == 1 ? 'selected' : '' }}>Robot</option>
                 <option value="5" {{ old('profile_picture_type', $user->profile_picture_type) == 5 ? 'selected' : '' }}>Human</option>
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('profile_picture_type')" />
         </div>
 
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4 mt-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
+            <p
+                x-data="{ show: true }"
+                x-show="show"
+                x-transition
+                x-init="setTimeout(() => show = false, 2000)"
+                class="text-sm text-gray-600 dark:text-gray-400"
+            >{{ __('Saved.') }}</p>
             @endif
         </div>
     </form>
