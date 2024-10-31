@@ -19,7 +19,12 @@
         <div class="mb-4">
             <x-input-label for="filiere" :value="__('Filiere')" />
             <select id="filiere" name="filiere" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50" required>
-                <option value="ISC">ISC</option>
+                <option value="" disabled {{ old('filiere', $user->filiere) ? '' : 'selected' }}>Choisissez une filière</option>
+                @foreach($filieres as $filiere)
+                    <option value="{{ $filiere }}" {{ old('filiere', $user->filiere) == $filiere ? 'selected' : '' }}>
+                        {{ $filiere }}
+                    </option>
+                @endforeach
             </select>
             <x-input-error class="mt-2" :messages="$errors->get('filiere')" />
         </div>
