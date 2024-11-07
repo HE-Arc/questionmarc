@@ -20,17 +20,6 @@ class QuestionController extends Controller
     ];
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        // sending user related questions to the view
-        return view('index', [
-            'questions' => Question::with(relations: 'author')->paginate(5)
-        ]);
-    }
-
-    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -60,7 +49,7 @@ class QuestionController extends Controller
 
         $question->save();
 
-        return redirect()->route('questions.index');
+        return redirect()->route('welcome');
     }
 
 
