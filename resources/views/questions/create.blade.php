@@ -8,6 +8,15 @@
                 <div class="mt-8 text-2xl">
                     <form action="{{ route('questions.store') }}" method="POST">
                         @csrf
+                         <!-- Year and filliere of the user displayed for information -->
+                         <div class="mb-4">
+                            <label for="year" class="block text-gray-700 text-sm font-bold mb-2">Année</label>
+                            <p class="text-gray-500 text-l font-bold mb-2">{{ Auth::user()->year }}</p>
+                        </div>
+                        <div class="mb-4">
+                            <label for="filliere" class="block text-gray-700 text-sm font-bold mb-2">Filière</label>
+                            <p class="text-gray-500 text-l font-bold mb-2">{{ Auth::user()->filiere }}</p>
+                        </div>
                         <div class="mb-4">
                             <label for="module" class="block text-gray-700 text-sm font-bold mb-2">Module</label>
                             <select name="module_id" id="module_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
