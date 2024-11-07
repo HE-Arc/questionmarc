@@ -24,11 +24,12 @@ class ModulesSeeder extends Seeder
 
             while (($data = fgetcsv($handle, 1000, ';')) !== false) {
                 if (count($data) >= 9) {
-                    
+
                     $module = [
                         'filiere_name' => substr($data[0], 0, -1),
                         'name' => $data[8],
                         'num_ue' => $data[7],
+                        'year' => substr($data[0], 3, 1),
                     ];
 
                     $modules[] = $module;
