@@ -58,7 +58,11 @@ class QuestionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $question = Question::find($id);
+
+        return view(view: 'questions.show', data: [
+            'question' => $question
+        ]);
     }
 
     /**
