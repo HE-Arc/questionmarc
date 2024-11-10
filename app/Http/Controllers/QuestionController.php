@@ -58,10 +58,12 @@ class QuestionController extends Controller
      */
     public function show(string $id)
     {
-        $question = Question::find($id);
+        $question = Question::findOrFail($id);
+        $answers = $question->answers()->orderBy('created_date', 'desc')->paginate(5);
 
-        return view(view: 'questions.show', data: [
-            'question' => $question
+        return view('questions.show', [
+            'question' => $question,
+            'answers' => $answers
         ]);
     }
 

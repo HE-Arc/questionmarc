@@ -4,6 +4,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AnswerController;
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
@@ -16,6 +17,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/questions/{question}', [QuestionController::class, 'update'])->where('question', '[0-9]+')->name('questions.update');
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->where('question', '[0-9]+')->name('questions.destroy');
     Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->where('question', '[0-9]+')->name('questions.edit');
+    Route::post('/answers', [AnswerController::class, 'store'])->name('answers.store');
 });
 
 Route::get('/questions/{question}', [QuestionController::class, 'show'])->where('question', '[0-9]+')->name('questions.show');
