@@ -39,7 +39,7 @@
         <!-- questions -->
         <div class="grid grid-cols-1 gap-6 max-w-full flex-1 p-6">
             @forelse ($questions as $question)
-                <div class="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between">
+                <div class="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between cursor-pointer" onclick="window.location='{{ route('questions.show', $question->id) }}'">
                     <div>
                         <div class="flex items-center gap-4 mb-4">
                             <div class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
