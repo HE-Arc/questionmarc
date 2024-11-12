@@ -13,6 +13,23 @@ class QuestionSeeder extends Seeder
      */
     public function run(): void
     {
+        $answers = [
+            [
+            'content' => 'La complexité temporelle moyenne d\'un algorithme de tri par insertion est O(n^2) dans le pire des cas. Ce type de tri est plus performant que le tri rapide lorsque le tableau est presque trié ou contient un petit nombre d\'éléments.',
+            'question_id' => 1,
+            'author_id' => 2,
+            'created_date' => now(),
+            'validated' => false,
+            ],
+            [
+            'content' => 'Le protocole TCP/IP garantit la fiabilité de la transmission des données en utilisant des numéros de séquence et des accusés de réception pour s\'assurer que les paquets sont reçus dans le bon ordre et sans erreur. Chaque couche du modèle OSI joue un rôle spécifique dans la fiabilité des données, de la segmentation des données à la vérification de l\'intégrité des paquets.',
+            'question_id' => 1,
+            'author_id' => 1,
+            'created_date' => now(),
+            'validated' => false,
+            ],
+        ];
+
         $questions = [
             [
                 'title' => 'Quelle est la complexité temporelle moyenne d\'un algorithme de tri par insertion?',
@@ -97,5 +114,6 @@ class QuestionSeeder extends Seeder
         ];
 
         DB::table('questions')->insert($questions);
+        DB::table('answers')->insert($answers);
     }
 }

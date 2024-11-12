@@ -16,7 +16,7 @@ class QuestionController extends Controller
      */
     private $rules = [
         'title' => 'required|min:5|max:100',
-        'content' => 'required|min:1|max:999',
+        'content' => 'required|min:1|max:16000',
     ];
 
     /**
@@ -61,7 +61,13 @@ class QuestionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $question = Question::findOrFail($id);
+        $answers = $question->answers()->orderBy('created_date', 'desc')->paginate(5);
+
+        return view('questions.show', [
+            'question' => $question,
+            'answers' => $answers
+        ]);
     }
 
     /**
