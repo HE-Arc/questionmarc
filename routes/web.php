@@ -21,5 +21,6 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/questions/{question}', [QuestionController::class, 'show'])->where('question', '[0-9]+')->name('questions.show');
+Route::get('/api/modules', [HomeController::class, 'getModules'])->name('api.modules');
 
 require __DIR__.'/auth.php';

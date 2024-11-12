@@ -27,6 +27,7 @@ class QuestionController extends Controller
         // Getting modules from the database Filtered modules by user filiere and year
         $modules = Module::where('filiere_name', Auth::user()->filiere)
             ->where('year', Auth::user()->year)
+            ->orderBy('name')
             ->get();
 
 
