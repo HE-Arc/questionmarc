@@ -5,7 +5,7 @@
             <!-- Section Question and Réponses (Left Panel) -->
             <div class="w-full lg:w-3/5 space-y-6">
                 <!-- Section Question -->
-                <div class="bg-white p-6 rounded-lg shadow cursor-pointer">
+                <div class="bg-white p-6 rounded-lg shadow {{ $question->resolved ? 'bg-green-50' : '' }}">
                     <div class="flex items-center gap-4 mb-4">
                         <div
                             class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
@@ -21,7 +21,19 @@
                         <h3 class="text-lg font-bold text-gray-900">{{ $question->title }}</h3>
                     </div>
                     <div class="text-gray-700">
+                        <div class="white-space-pre-line break-words text-justify">
                         {{ $question->content }}
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2 justify-start">
+                        <span class="px-3 py-1 rounded-full text-sm text-white"
+                            style="background-color: {{ $dynamicColor($question->module->filiere_name) }}">
+                            {{ $question->module->filiere_name }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-sm text-white truncate max-w-xs"
+                            style="background-color: {{ $dynamicColor($question->module->name) }}">
+                            {{ $question->module->name }}
+                        </span>
                     </div>
                 </div>
 
@@ -29,7 +41,7 @@
                 <div class="bg-white p-6 rounded-lg shadow">
                     <h3 class="text-xl font-medium mb-4">{{ count($question->answers) }} réponse{{ count($question->answers) > 1 ? 's' : '' }}</h3>
                     @foreach ($answers as $answer)
-                        <div class="mb-4 p-4 bg-gray-100 rounded-lg">
+                        <div class="mb-4 p-4 bg-gray-100 rounded-lg {{ $answer->validated ? 'bg-green-50' : '' }}">
                             <div class="flex items-center gap-4 mb-2">
                                 <div
                                     class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
@@ -42,8 +54,31 @@
                                 </div>
                             </div>
                             <div class="text-gray-700">
-                                {{ $answer->content }}
+                                <div class="white-space-pre-line break-words text-justify">{{ $answer->content }}</div>
                             </div>
+                            <!-- Best Answer Badge -->
+                            @if ($answer->validated)
+                                <div class="mt-4 flex items-center gap-2">
+                                    <div class="px-3 py-1 bg-green-400 text-white rounded-full text-sm">
+                                        Meilleure réponse
+                                    </div>
+                                    @if (Auth::check() && Auth::user()->id == $question->author_id)
+                                        <form action="{{ route('answers.cancel', $answer->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600">
+                                                Annuler
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @elseif (Auth::check() && Auth::user()->id == $question->author_id && !$question->resolved)
+                                <form action="{{ route('answers.accept', $answer->id) }}" method="POST" class="mt-2">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">
+                                        Valider
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     @endforeach
                     <!-- Pagination links -->
