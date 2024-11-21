@@ -54,6 +54,29 @@
                             <div class="text-gray-700">
                                 {{ $answer->content }}
                             </div>
+                            <!-- Best Answer Badge -->
+                            @if ($answer->validated)
+                                <div class="mt-4 flex items-center gap-2">
+                                    <div class="px-3 py-1 bg-green-400 text-white rounded-full text-sm">
+                                        Meilleure réponse
+                                    </div>
+                                    @if (Auth::check() && Auth::user()->id == $question->author_id)
+                                        <form action="{{ route('answers.cancel', $answer->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600">
+                                                Annuler
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            @elseif (Auth::check() && Auth::user()->id == $question->author_id && !$question->resolved)
+                                <form action="{{ route('answers.accept', $answer->id) }}" method="POST" class="mt-2">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">
+                                        Valider
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     @endforeach
                     <!-- Pagination links -->
