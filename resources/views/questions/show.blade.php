@@ -21,7 +21,9 @@
                         <h3 class="text-lg font-bold text-gray-900">{{ $question->title }}</h3>
                     </div>
                     <div class="text-gray-700">
+                        <div class="white-space-pre-line break-words text-justify">
                         {{ $question->content }}
+                        </div>
                     </div>
                     <div class="mt-4 flex gap-2 justify-start">
                         <span class="px-3 py-1 rounded-full text-sm text-white"
@@ -52,7 +54,7 @@
                                 </div>
                             </div>
                             <div class="text-gray-700">
-                                {{ $answer->content }}
+                                <div class="white-space-pre-line break-words text-justify">{{ $answer->content }}</div>
                             </div>
                             <!-- Best Answer Badge -->
                             @if ($answer->validated)

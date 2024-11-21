@@ -62,7 +62,8 @@
                             <h3 class="text-lg font-bold text-gray-900">{{ $question->title }}</h3>
                         </div>
                         <div class="text-gray-700 break-words">
-                            {{ $question->content }}
+                            <div class="white-space-pre-line break-words text-justify"> {{ $question->content }}
+                            </div>
                         </div>
                     </div>
                     <div class="mt-4 flex gap-2 justify-start">
