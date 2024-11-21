@@ -30,6 +30,13 @@
                         <!-- Javascript auto input here -->
                     </select>
 
+                    <!-- Filter by resolved questions -->
+                    <select id="resolved-select" name="resolved" class="...">
+                        <option value="">Toutes les questions</option>
+                        <option value="1" {{ $selectedResolved == '1' ? 'selected' : '' }}>Résolues</option>
+                        <option value="0" {{ $selectedResolved == '0' ? 'selected' : '' }}>Non résolues</option>
+                    </select>
+
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Filtrer</button>
                 </div>
             </form>
