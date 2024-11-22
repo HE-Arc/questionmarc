@@ -17,4 +17,8 @@ class Answer extends Model
     public function question() {
         return $this->belongsTo(Question::class);
     }
+
+    public function upvoters() {
+        return $this->belongsToMany(User::class, 'answers_users_upvote', 'answer_id', 'user_id');
+    }
 }

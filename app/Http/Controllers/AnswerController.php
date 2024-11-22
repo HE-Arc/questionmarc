@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Answer;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class AnswerController extends Controller
@@ -30,6 +31,20 @@ class AnswerController extends Controller
 
         return redirect()->route('questions.show', ['question' => $answer->question_id]);
     }
+
+    public function upvote(Request $request, $answerId)
+    {
+    $user = User::findOrFail(Auth::id());
+    $answer = Answer::findOrFail($answerId);
+
+    if ($user->upvotedAnswers->contains($answer->id)) {
+        $user->upvotedAnswers()->detach($answer->id);
+    } else {
+        $user->upvotedAnswers()->attach($answer->id);
+    }
+    
+    return redirect()->route('questions.show', ['question' => $answer->question_id]);
+}
 
     /**
      * Show the form for editing the specified resource.

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Module;
 use Illuminate\Http\Request;
@@ -63,7 +64,22 @@ class QuestionController extends Controller
     public function show(string $id)
     {
         $question = Question::findOrFail($id);
-        $answers = $question->answers()->orderBy('created_date', 'desc')->paginate(5);
+        $answers = Answer::withCount('upvoters')
+            ->where('question_id', $question->id)
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+
+    if (Auth::check()) {
+        $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
+
+        foreach ($answers as $answer) {
+            $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+        }
+    } else {
+        foreach ($answers as $answer) {
+            $answer->userHasUpvoted = false;
+        }
+    }
 
         return view('questions.show', [
             'question' => $question,

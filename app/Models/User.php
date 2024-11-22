@@ -49,4 +49,8 @@ class User extends Authenticatable
     public function questions() {
         return $this->hasMany(Question::class);
     }
+
+    public function upvotedAnswers() {
+        return $this->belongsToMany(Answer::class, 'answers_users_upvote', 'user_id', 'answer_id');
+    }
 }
