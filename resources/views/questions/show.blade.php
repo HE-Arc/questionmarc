@@ -5,7 +5,7 @@
             <!-- Section Question and Réponses (Left Panel) -->
             <div class="w-full lg:w-3/5 space-y-6">
                 <!-- Section Question -->
-                <div class="bg-white p-6 rounded-lg shadow cursor-pointer">
+                <div class="bg-white p-6 rounded-lg shadow {{ $question->resolved ? 'bg-green-50' : '' }}">
                     <div class="flex items-center gap-4 mb-4">
                         <div
                             class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
@@ -21,7 +21,19 @@
                         <h3 class="text-lg font-bold text-gray-900">{{ $question->title }}</h3>
                     </div>
                     <div class="text-gray-700">
-                        {{ $question->content }}
+                        <div class="white-space-pre-line break-words text-justify">
+                            {{ $question->content }}
+                        </div>
+                    </div>
+                    <div class="mt-4 flex gap-2 justify-start">
+                        <span class="px-3 py-1 rounded-full text-sm text-white"
+                            style="background-color: {{ $dynamicColor($question->module->filiere_name) }}">
+                            {{ $question->module->filiere_name }}
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-sm text-white truncate max-w-xs"
+                            style="background-color: {{ $dynamicColor($question->module->name) }}">
+                            {{ $question->module->name }}
+                        </span>
                     </div>
                 </div>
 
@@ -31,10 +43,9 @@
                     @foreach ($answers as $index => $answer)
                         <div class="mb-4 flex flex-col">
                             <!-- Section Contenu de la réponse -->
-                            <div class="flex-grow bg-gray-100 p-4 rounded-lg">
+                            <div class="p-4 rounded-lg {{ $answer->validated ? 'bg-green-50' : 'bg-gray-100' }}">
                                 <div class="flex items-center gap-4 mb-2">
-                                    <div
-                                        class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                    <div class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
                                         <img src="https://robohash.org/{{ $answer->author->username }}.png?size=50x50&set=set{{ $answer->author->profile_picture_type }}"
                                             class="w-full h-full object-cover">
                                     </div>
@@ -44,10 +55,37 @@
                                     </div>
                                 </div>
                                 <div class="text-gray-700 mb-4">
-                                    {{ $answer->content }}
+                                    <div class="white-space-pre-line break-words text-justify">
+                                        {!! nl2br(e($answer->content)) !!}
+                                    </div>
                                 </div>
+                                <!-- Best Answer Badge -->
+                                @if ($answer->validated)
+                                    <div class="mt-4 flex items-center gap-2">
+                                        <div class="px-3 py-1 bg-green-400 text-white rounded-full text-sm">
+                                            Meilleure réponse
+                                        </div>
+                                        @if (Auth::check() && Auth::user()->id == $question->author_id)
+                                            <form action="{{ route('answers.cancel', $answer->id) }}" method="POST">
+                                                @csrf
+                                                <button type="submit"
+                                                    class="px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600">
+                                                    Annuler
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @elseif (Auth::check() && Auth::user()->id == $question->author_id && !$question->resolved)
+                                    <form action="{{ route('answers.accept', $answer->id) }}" method="POST"
+                                        class="mt-2">
+                                        @csrf
+                                        <button type="submit"
+                                            class="px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600">
+                                            Valider
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
-
                             <!-- Section Bouton d'upvote et compteur -->
                             <div class="flex items-center mt-2">
                                 <form action="{{ route('answers.upvote', $answer->id) }}" method="POST"
@@ -64,10 +102,10 @@
                                 </form>
                                 <span class="ml-2 text-gray-700">{{ $answer->upvoters_count ?? 0 }}</span>
                             </div>
+                            @if ($index !== count($answers) - 1)
+                                <hr class="my-4 border-gray-300">
+                            @endif
                         </div>
-                        @if ($index !== count($answers) - 1)
-                            <hr class="my-4 border-gray-300">
-                        @endif
                     @endforeach
                     <!-- Pagination links -->
                     <div class="mt-6 flex justify-center">

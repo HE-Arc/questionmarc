@@ -31,7 +31,7 @@ class AnswerController extends Controller
 
         return redirect()->route('questions.show', ['question' => $answer->question_id]);
     }
-
+  
     public function upvote(Request $request, $answerId)
     {
     $user = User::findOrFail(Auth::id());
@@ -45,7 +45,47 @@ class AnswerController extends Controller
     
     return redirect()->route('questions.show', ['question' => $answer->question_id]);
 }
+    /**
+     * Mark the answer as accepted.
+     */
+    public function accept(string $id)
+    {
+        // validate the request if the user is the author of the question and if the answer belongs to the question and if the answer is not already accepted
+        $answer = Answer::findOrFail($id);
+        $question = $answer->question;
 
+        if ($question->author_id !== Auth::id() || $answer->question_id !== $question->id || $answer->validated) {
+            return redirect()->route('questions.show', ['question' => $question->id]);
+        }else{
+            $answer->validated = true;
+            $answer->save();
+            $question->resolved = true;
+            $question->save();
+            return redirect()->route('questions.show', ['question' => $question->id]);
+        }
+
+    }
+
+    /**
+     * Cancel the accepted answer.
+     */
+    public function cancel(string $id)
+    {
+        // validate the request if the user is the author of the question and if the answer belongs to the question and if the answer is accepted
+        $answer = Answer::findOrFail($id);
+        $question = $answer->question;
+
+        if ($question->author_id !== Auth::id() || $answer->question_id !== $question->id || !$answer->validated) {
+            return redirect()->route('questions.show', ['question' => $question->id]);
+        }else{
+            $answer->validated = false;
+            $answer->save();
+            $question->resolved = false;
+            $question->save();
+            return redirect()->route('questions.show', ['question' => $question->id]);
+        }
+    }
+  
     /**
      * Show the form for editing the specified resource.
      */
