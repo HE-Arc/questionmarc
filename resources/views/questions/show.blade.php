@@ -5,7 +5,7 @@
             <!-- Section Question and Réponses (Left Panel) -->
             <div class="w-full lg:w-3/5 space-y-6">
                 <!-- Section Question -->
-                <div class="bg-white p-6 rounded-lg shadow {{ $question->resolved ? 'bg-green-50' : '' }}">
+                <div class="p-6 rounded-lg shadow {{ $question->resolved ? 'bg-green-50' : 'bg-white' }}">
                     <div class="flex items-center gap-4 mb-4">
                         <div
                             class="relative w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
@@ -22,7 +22,7 @@
                     </div>
                     <div class="text-gray-700">
                         <div class="white-space-pre-line break-words text-justify">
-                            {{ $question->content }}
+                            {!! nl2br(e($question->content)) !!}
                         </div>
                     </div>
                     <div class="mt-4 flex gap-2 justify-start">
