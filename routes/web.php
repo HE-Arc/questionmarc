@@ -18,9 +18,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->where('question', '[0-9]+')->name('questions.destroy');
     Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->where('question', '[0-9]+')->name('questions.edit');
     Route::post('/answers', [AnswerController::class, 'store'])->name('answers.store');
+    Route::post('/answers/{answer}/upvote', [AnswerController::class, 'upvote'])->name('answers.upvote');
     Route::post('/answers/{answer}/accept', [AnswerController::class, 'accept'])->where('answer', '[0-9]+')->name('answers.accept');
     Route::post('/answers/{answer}/cancel', [AnswerController::class, 'cancel'])->where('answer', '[0-9]+')->name('answers.cancel');
-
 });
 
 Route::get('/questions/{question}', [QuestionController::class, 'show'])->where('question', '[0-9]+')->name('questions.show');
