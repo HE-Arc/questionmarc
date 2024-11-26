@@ -31,20 +31,28 @@ class AnswerController extends Controller
 
         return redirect()->route('questions.show', ['question' => $answer->question_id]);
     }
-  
+
     public function upvote(Request $request, $answerId)
     {
-    $user = User::findOrFail(Auth::id());
-    $answer = Answer::findOrFail($answerId);
+        $user = User::findOrFail(Auth::id());
+        $answer = Answer::findOrFail($answerId);
 
-    if ($user->upvotedAnswers->contains($answer->id)) {
-        $user->upvotedAnswers()->detach($answer->id);
-    } else {
-        $user->upvotedAnswers()->attach($answer->id);
+        $hasUpvoted = $user->upvotedAnswers->contains($answer->id);
+
+        if ($hasUpvoted) {
+            $user->upvotedAnswers()->detach($answer->id);
+        } else {
+            $user->upvotedAnswers()->attach($answer->id);
+        }
+
+        // Retourne une réponse JSON avec l'état actuel des votes
+        return response()->json([
+            'success' => true,
+            'upvoted' => !$hasUpvoted,
+            'upvoters_count' => $answer->upvoters()->count(),
+        ]);
     }
-    
-    return redirect()->route('questions.show', ['question' => $answer->question_id]);
-}
+
     /**
      * Mark the answer as accepted.
      */
@@ -85,7 +93,7 @@ class AnswerController extends Controller
             return redirect()->route('questions.show', ['question' => $question->id]);
         }
     }
-  
+
     /**
      * Show the form for editing the specified resource.
      */
