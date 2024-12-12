@@ -11,15 +11,20 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Question::with(['author', 'module']);
+        $query = Question::with(['author', 'module'])
+            ->withCount([
+                'answers as upvotes_total' => function ($query) {
+                    // Calculer la somme des upvotes pour toutes les réponses associées
+                    $query->select(DB::raw('SUM((SELECT COUNT(*) FROM answers_users_upvote WHERE answers_users_upvote.answer_id = answers.id))'));
+                }
+            ]);
 
-        // Filter by module
+        // Appliquer les filtres existants
         if ($request->filled('module')) {
             $query->whereHas('module', function ($q) use ($request) {
                 $q->where('name', $request->input('module'));
             });
         } else {
-            // Filter by filiere and year if modules not available
             $query->whereHas('module', function ($q) use ($request) {
                 if ($request->filled('filiere')) {
                     $q->where('filiere_name', $request->input('filiere'));
@@ -30,22 +35,18 @@ class HomeController extends Controller
             });
         }
 
-        // Filter by status "resolved"
         if ($request->filled('resolved')) {
             $query->where('resolved', $request->input('resolved'));
         }
 
-        // Filter by created date
         $query->orderBy('created_date', 'desc');
 
         $questions = $query->paginate(5);
 
-        // Get all modules, filieres and years
+        // Passer les données nécessaires à la vue
         $modules = Module::withCount('questions')->get();
         $filieres = Module::select('filiere_name')->distinct()->get();
         $years = Module::select('year')->distinct()->get();
-
-        // Passer l'URL de l'API des modules à la vue
         $apiModulesUrl = route('api.modules');
 
         return view('index', [
@@ -60,6 +61,7 @@ class HomeController extends Controller
             'apiModulesUrl' => $apiModulesUrl,
         ]);
     }
+
 
     public function getModules(Request $request)
     {
