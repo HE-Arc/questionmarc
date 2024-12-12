@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Module;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,18 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function show($profile): View
+    {
+        $user = User::with(['questions', 'answers', 'upvotedAnswers'])->findOrFail($profile);
+
+        return view('profile.show', [
+            'user' => $user,
+            'questions' => $user->questions,
+            'answers' => $user->answers,
+            'upvotedAnswers' => $user->upvotedAnswers
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */

@@ -13,7 +13,11 @@
                                 class="w-full h-full object-cover">
                         </div>
                         <div class="ml-2 font-medium dark:text-black">
-                            <div>{{ $question->author->username }}</div>
+                            <div>
+                                <a href="{{ route('profile.show', $question->author->id) }}" class="text-blue-500 hover:underline">
+                                    {{ $question->author->username }}
+                                </a>
+                            </div>
                             <div class="text-sm text-gray-500">Créé le {{ $question->created_date }}</div>
                         </div>
                     </div>
@@ -52,7 +56,11 @@
                                             class="w-full h-full object-cover">
                                     </div>
                                     <div class="ml-2 font-medium dark:text-black">
-                                        <div>{{ $answer->author->username }}</div>
+                                        <div>
+                                            <a href="{{ route('profile.show', $answer->author->id) }}" class="text-blue-500 hover:underline">
+                                                {{ $answer->author->username }}
+                                            </a>
+                                        </div>
                                         <div class="text-sm text-gray-500">Répondu le {{ $answer->created_date }}</div>
                                     </div>
                                 </div>
