@@ -16,7 +16,7 @@ return new class extends Migration
             $table->dropForeign(['answer_id']);
             $table->dropUnique('answers_users_upvote_user_id_answer_id_unique');
 
-            $table->unsignedBigInteger('id')->nullable()->change();
+            $table->unsignedBigInteger('id')->change();
             $table->dropPrimary('id');
             $table->dropColumn('id');
 
