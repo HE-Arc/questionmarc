@@ -23,8 +23,8 @@
                         <div class="flex-1">
                             <div class="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center">
                                 <!-- Titre de la Question -->
-                                <h4 class="text-sm font-semibold text-gray-900 hover:text-indigo-600 truncate">
-                                    {{ \Illuminate\Support\Str::limit($question->title, 50, '...') }}
+                                <h4 class="text-sm font-semibold text-gray-900 hover:text-indigo-600 break-words whitespace-normal">
+                                    {{ $question->title }}
                                 </h4>
                                 <!-- Date de Création -->
                                 <span class="text-xs text-gray-500 mt-1 sm:mt-0 sm:ml-2">
