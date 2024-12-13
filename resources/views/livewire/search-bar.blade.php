@@ -8,7 +8,7 @@
     </form>
     @if (!empty($search))
         <div class="absolute z-50 mt-1 w-full bg-white rounded-md shadow-lg">
-            @if (count($questions) > 0)
+            @if ($questions != null)
                 @foreach ($questions as $question)
                     <div class="{{ $question->resolved ? 'bg-green-50' : 'bg-white' }} shadow-sm rounded-md p-4 flex items-start space-x-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200"
                         onclick="window.location.href = '{{ route('questions.show', $question) }}'">
