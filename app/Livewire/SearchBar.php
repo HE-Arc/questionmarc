@@ -39,6 +39,12 @@ class SearchBar extends Component
             'questions' => $questions
         ]);
     }
+
+    public function submitSearch()
+    {
+        // Rediriger vers le controller avec le paramètre search
+        return redirect()->route('welcome', ['search' => $this->search]);
+    }
 }
 
 
