@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Question;
 use App\Models\Module;
+use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,7 @@ class QuestionController extends Controller
     private $rules = [
         'title' => 'required|min:5|max:100',
         'content' => 'required|min:1|max:16000',
+        'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
     ];
 
     /**
@@ -53,6 +55,24 @@ class QuestionController extends Controller
         $question->resolved = false;
 
         $question->save();
+
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $image) {
+
+                $imageRecord = Image::create([
+                    'question_id' => $question->id,
+                    'path' => '',
+                ]);
+
+                $path = $image->storeAs(
+                    'images/question' . $question->id,
+                    $imageRecord->id . '_' . $image->getClientOriginalName(),
+                    'public'
+                );
+                $imageRecord->path = $path;
+                $imageRecord->save();
+            }
+        }
 
         return redirect()->route('welcome');
     }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Answer;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Image;
 
 class AnswerController extends Controller
 {
@@ -17,6 +18,7 @@ class AnswerController extends Controller
         $request->validate([
             'content' => 'required|min:1|max:16000',
             'question_id' => 'required|exists:questions,id',
+            'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
 
@@ -28,6 +30,25 @@ class AnswerController extends Controller
         $answer->validated = false;
 
         $answer->save();
+
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $image) {
+
+                $imageRecord = Image::create([
+                    'question_id' => $answer->question_id,
+                    'answer_id' => $answer->id,
+                    'path' => '',
+                ]);
+
+                $path = $image->storeAs(
+                    'images/question' . $answer->question_id . '/answer' . $answer->id,
+                    $imageRecord->id . '_' . $image->getClientOriginalName(),
+                    'public'
+                );
+                $imageRecord->path = $path;
+                $imageRecord->save();
+            }
+        }
 
         return redirect()->route('questions.show', ['question' => $answer->question_id]);
     }
