@@ -17,11 +17,41 @@ class ProfileController extends Controller
     {
         $user = User::with(['questions', 'answers', 'upvotedAnswers'])->findOrFail($profile);
 
+        $questions = $user->questions()
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+        $upvotedAnswers = $user->upvotedAnswers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+        $answers = $user->answers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+
+        if (Auth::check()) {
+            $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
+
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+        } else {
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+        }
+
         return view('profile.show', [
             'user' => $user,
-            'questions' => $user->questions,
-            'answers' => $user->answers,
-            'upvotedAnswers' => $user->upvotedAnswers
+            'questions' => $questions,
+            'answers' => $answers,
+            'upvotedAnswers' => $upvotedAnswers
         ]);
     }
 
