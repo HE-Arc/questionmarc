@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Module;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,48 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function show($profile): View
+    {
+        $user = User::with(['questions', 'answers', 'upvotedAnswers'])->findOrFail($profile);
+
+        $questions = $user->questions()
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+        $upvotedAnswers = $user->upvotedAnswers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+        $answers = $user->answers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5);
+
+        if (Auth::check()) {
+            $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
+
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+        } else {
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+        }
+
+        return view('profile.show', [
+            'user' => $user,
+            'questions' => $questions,
+            'answers' => $answers,
+            'upvotedAnswers' => $upvotedAnswers
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */
