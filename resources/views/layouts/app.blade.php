@@ -30,6 +30,10 @@
             <main class="flex-col items-center flex-1">
                 {{ $slot }}
             </main>
+
         </div>
+        <footer class="bg-gray-800 text-white">
+            @include('layouts.footer')
+        </footer>
     </body>
 </html>
