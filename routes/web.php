@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\ImageController;
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
