@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+const TABS = ['questions', 'answers', 'upvotes'];
+
 class ProfileController extends Controller
 {
     public function show($profile): View
@@ -19,15 +21,15 @@ class ProfileController extends Controller
 
         $questions = $user->questions()
             ->orderBy('created_date', 'desc')
-            ->paginate(5);
+            ->paginate(5, ['*'], 'questions_page');
         $upvotedAnswers = $user->upvotedAnswers()
             ->withCount('upvoters')
             ->orderBy('created_date', 'desc')
-            ->paginate(5);
+            ->paginate(5, ['*'], 'upvotes_page');
         $answers = $user->answers()
             ->withCount('upvoters')
             ->orderBy('created_date', 'desc')
-            ->paginate(5);
+            ->paginate(5, ['*'], 'answers_page');
 
         if (Auth::check()) {
             $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
@@ -47,11 +49,17 @@ class ProfileController extends Controller
             }
         }
 
+        $tab = request('tab', '');
+        if (!in_array($tab, TABS)) {
+            $tab = 'questions';
+        }
+
         return view('profile.show', [
             'user' => $user,
             'questions' => $questions,
             'answers' => $answers,
-            'upvotedAnswers' => $upvotedAnswers
+            'upvotedAnswers' => $upvotedAnswers,
+            'tab' => $tab
         ]);
     }
 
