@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto p-6">
-        <div x-data="{ activeTab: 'questions' }" class="p-6">
+        <div x-data="{ activeTab: '{{ $tab }}' }" class="p-6">
             <!-- Photo de profil et informations utilisateur -->
             <div class="flex flex-col items-center mb-6">
                 <img src="https://robohash.org/{{ $user->username }}.png?size=150x150&set=set{{ $user->profile_picture_type }}"
@@ -49,7 +49,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    {{ $questions->links() }}
+                    {{ $questions->appends(['tab' => 'questions'])->links() }}
                 </div>
             </div>
 
@@ -65,7 +65,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    {{ $answers->links() }}
+                    {{ $answers->appends(['tab' => 'answers'])->links() }}
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    {{ $upvotedAnswers->links() }}
+                    {{ $upvotedAnswers->appends(['tab' => 'upvotes'])->links() }}
                 </div>
             </div>
         </div>
