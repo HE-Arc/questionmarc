@@ -45,7 +45,7 @@
 
 
         <!-- questions -->
-        <div class="w-full px-4 sm:px-6 lg:px-8">
+        <div class="lg:w-1/2 sm:w-full px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-6 p-6">
                 @forelse ($questions as $question)
                     <x-question :question="$question" :classic="true"></x-question>

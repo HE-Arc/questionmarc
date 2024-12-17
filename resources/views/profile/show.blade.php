@@ -39,7 +39,7 @@
             <!-- Contenu des onglets -->
             <!-- Questions -->
             <div x-show="activeTab === 'questions'" class="flex flex-col items-center">
-                <div class="w-full px-4 sm:px-6 lg:px-8">
+                <div class="lg:w-3/4 sm:w-full px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col gap-6 p-6">
                         @forelse($questions as $question)
                             <x-question :question="$question" :classic="true"></x-question>
@@ -55,7 +55,7 @@
 
             <!-- Réponses -->
             <div x-show="activeTab === 'answers'" class="flex flex-col items-center">
-                <div class="w-full px-4 sm:px-6 lg:px-8">
+                <div class="lg:w-3/4 sm:w-full px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col gap-6 p-6">
                         @forelse($answers as $index => $answer)
                             <x-answer :index="$index" :answers="$answers" :answer="$answer" :classic="false"></x-answer>
@@ -71,7 +71,7 @@
 
             <!-- Upvotes -->
             <div x-show="activeTab === 'upvotes'" class="flex flex-col items-center">
-                <div class="w-full px-4 sm:px-6 lg:px-8">
+                <div class="lg:w-3/4 sm:w-full px-4 sm:px-6 lg:px-8">
                     <div class="flex flex-col gap-6 p-6">
                         @forelse($upvotedAnswers as $index => $answer)
                             <x-answer :index="$index" :answers="$upvotedAnswers" :answer="$answer" :classic="false"></x-answer>
