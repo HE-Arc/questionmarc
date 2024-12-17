@@ -5,7 +5,7 @@
             <!-- Section Question and Réponses (Left Panel) -->
             <div class="w-full lg:w-3/5 space-y-6">
                 <!-- Section Question -->
-                <x-question :question="$question" :classic="false"></x-question>
+                <x-question :question="$question" :classic="false" :questionImages="$questionImages"></x-question>
 
                 <!-- Section Réponses -->
                 <div class="bg-white p-6 rounded-lg shadow">

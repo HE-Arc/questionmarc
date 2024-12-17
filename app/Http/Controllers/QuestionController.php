@@ -85,9 +85,11 @@ class QuestionController extends Controller
     {
         $question = Question::findOrFail($id);
         $answers = Answer::withCount('upvoters')
+            ->with('images')
             ->where('question_id', $question->id)
             ->orderBy('created_date', 'desc')
             ->paginate(5);
+        $questionImages = $question->images()->where('answer_id', null)->select('path')->get();
 
     if (Auth::check()) {
         $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
@@ -103,7 +105,8 @@ class QuestionController extends Controller
 
         return view('questions.show', [
             'question' => $question,
-            'answers' => $answers
+            'answers' => $answers,
+            'questionImages' => $questionImages,
         ]);
     }
 
