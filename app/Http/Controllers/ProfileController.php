@@ -4,14 +4,65 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Module;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
+const TABS = ['questions', 'answers', 'upvotes'];
+
 class ProfileController extends Controller
 {
+    public function show($profile): View
+    {
+        $user = User::with(['questions', 'answers', 'upvotedAnswers'])->findOrFail($profile);
+
+        $questions = $user->questions()
+            ->orderBy('created_date', 'desc')
+            ->paginate(5, ['*'], 'questions_page');
+        $upvotedAnswers = $user->upvotedAnswers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5, ['*'], 'upvotes_page');
+        $answers = $user->answers()
+            ->withCount('upvoters')
+            ->orderBy('created_date', 'desc')
+            ->paginate(5, ['*'], 'answers_page');
+
+        if (Auth::check()) {
+            $userUpvotes = Auth::user()->upvotedAnswers->pluck('id')->toArray();
+
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = in_array($answer->id, $userUpvotes);
+            }
+        } else {
+            foreach ($answers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+            foreach ($upvotedAnswers as $answer) {
+                $answer->userHasUpvoted = false;
+            }
+        }
+
+        $tab = request('tab', '');
+        if (!in_array($tab, TABS)) {
+            $tab = 'questions';
+        }
+
+        return view('profile.show', [
+            'user' => $user,
+            'questions' => $questions,
+            'answers' => $answers,
+            'upvotedAnswers' => $upvotedAnswers,
+            'tab' => $tab
+        ]);
+    }
+
     /**
      * Display the user's profile form.
      */

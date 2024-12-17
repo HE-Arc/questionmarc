@@ -5,6 +5,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnswerController;
+use App\Http\Controllers\ImageController;
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
@@ -25,5 +26,6 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/questions/{question}', [QuestionController::class, 'show'])->where('question', '[0-9]+')->name('questions.show');
 Route::get('/api/modules', [HomeController::class, 'getModules'])->name('api.modules');
+Route::get('/profile/{profile}', [ProfileController::class, 'show'])->name('profile.show');
 
 require __DIR__.'/auth.php';

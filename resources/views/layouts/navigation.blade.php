@@ -44,19 +44,17 @@
                         </x-nav-link>
                     </div>
                 @endguest
-
                 @auth
-                    <!-- Dropdown Paramètres -->
-                    <div class="hidden sm:flex sm:items-center sm:ms-6">
-                        <x-dropdown align="right" width="48">
-                            <x-slot name="trigger">
-                                <button
-                                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
-                                    <div class="relative w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
-                                        <img src="https://robohash.org/{{ Auth::user()->username }}.png?size=40x40&set=set{{ Auth::user()->profile_picture_type }}" alt="Profile Picture">
-                                    </div>
-                                    <div class="ms-2">{{ Auth::user()->username }}</div>
-
+                <!-- Dropdown Paramètres -->
+                <div class="hidden sm:flex sm:items-center sm:ms-6">
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150">
+                                <div class="relative w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center overflow-hidden">
+                                    <img src="https://robohash.org/{{ Auth::user()->username }}.png?size=40x40&set=set{{ Auth::user()->profile_picture_type }}" alt="Profile Picture">
+                                </div>
+                                <div class="ms-2">{{ Auth::user()->username }}</div>
                                     <div class="ms-1">
                                         <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
                                             viewBox="0 0 20 20">
@@ -67,10 +65,12 @@
                                     </div>
                                 </button>
                             </x-slot>
-
                             <x-slot name="content">
+                                <x-dropdown-link :href="route('profile.show', ['profile' => Auth::user()->id])">
+                                    {{ __('Profil') }}
+                                </x-dropdown-link>
                                 <x-dropdown-link :href="route('profile.edit')">
-                                    {{ __('Profile') }}
+                                    {{ __('Paramètres') }}
                                 </x-dropdown-link>
 
                                 <!-- Déconnexion -->
@@ -135,8 +135,12 @@
                 </div>
 
                 <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('profile.show', ['profile' => Auth::user()->id])">
+                        {{ __('Profil') }}
+                    </x-responsive-nav-link>
+
                     <x-responsive-nav-link :href="route('profile.edit')">
-                        {{ __('Profile') }}
+                        {{ __('Paramètres') }}
                     </x-responsive-nav-link>
 
                     <!-- Déconnexion -->
@@ -146,7 +150,7 @@
                         <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                             this.closest('form').submit();">
-                            {{ __('Log Out') }}
+                            {{ __('Déconnexion') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>

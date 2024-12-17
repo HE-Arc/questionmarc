@@ -21,4 +21,8 @@ class Answer extends Model
     public function upvoters() {
         return $this->belongsToMany(User::class, 'answers_users_upvote', 'answer_id', 'user_id');
     }
+
+    public function images() {
+        return $this->hasMany(Image::class);
+    }
 }
