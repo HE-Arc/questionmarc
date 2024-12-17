@@ -32,7 +32,11 @@ class ModulesSeeder extends Seeder
                         'year' => substr($data[0], 3, 1),
                     ];
 
-                    $modules[] = $module;
+                    if (DB::table('modules')->where('num_ue', $module['num_ue'])->exists()) {
+                        continue;
+                    } else {
+                        DB::table('modules')->insert($module);
+                    }
                 } else {
                     echo "Skipping row due to insufficient columns: ";
                 }
@@ -43,7 +47,5 @@ class ModulesSeeder extends Seeder
         } else {
             echo "Could not open the file.";
         }
-
-        DB::table('modules')->insert($modules);
     }
 }
