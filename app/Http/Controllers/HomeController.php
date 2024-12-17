@@ -19,6 +19,20 @@ class HomeController extends Controller
                 }
             ]);
 
+        if ($search = trim($request->input('search', ''))) {
+            $words = preg_split('/\s+/', $search);
+            $searchQuery = '';
+            foreach ($words as $word) {
+                $searchQuery .= $word . '* ';
+            }
+            $searchQuery = trim($searchQuery);
+
+            // Ajout du filtre fulltext
+            $query->whereRaw("MATCH(title) AGAINST(? IN BOOLEAN MODE)", [$searchQuery])
+                ->orderByRaw("MATCH(title) AGAINST(? IN BOOLEAN MODE) DESC", [$searchQuery]);
+        }
+
+
         // Appliquer les filtres existants
         if ($request->filled('module')) {
             $query->whereHas('module', function ($q) use ($request) {
