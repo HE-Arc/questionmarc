@@ -1,7 +1,7 @@
 <div class="relative">
     <!-- Ajout d'un formulaire Livewire -->
     <form class="d-flex" role="search" wire:submit.prevent="submitSearch">
-        <input type="text" wire:model.live.debounce.300ms="search"
+        <input name="search" type="text" wire:model.live.debounce.200ms="search"
                placeholder="Chercher une question..."
                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
     </form>

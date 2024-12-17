@@ -7,7 +7,7 @@ use App\Models\Question;
 
 class SearchBar extends Component
 {
-    public $search = '';
+    public $search = "";
 
     public function render()
     {
