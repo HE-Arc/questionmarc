@@ -5,8 +5,8 @@
             <h5 class="text-lg font-semibold mb-2">Contactez-nous</h5>
             <ul>
                 <li class="mb-1">
-                    <a href="mailto:tom.vivone@he-arc.ch?cc=sebastien.mendes@he-arc.ch,luan.bozier@he-arc.ch" class="hover:underline">
-                        Email : Click here to send an email to us.
+                    <a href="mailto:tom.vivone@he-arc.ch;sebastien.mendes@he-arc.ch;luan.bozier@he-arc.ch" class="hover:underline">
+                        Email : Cliquez ici pour nous contacter.
                     </a>
                 </li>
             </ul>
