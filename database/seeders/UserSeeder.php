@@ -33,5 +33,29 @@ class UserSeeder extends Seeder
             'year' => 2,
             'profile_picture_type' => 5,
         ]);
+        User::factory()->create([
+            'username' => 'Bob',
+            'filiere' => 'IGI',
+            'year' => 2,
+            'profile_picture_type' => 5,
+        ]);
+        User::factory()->create([
+            'username' => 'Alice',
+            'filiere' => 'MIC',
+            'year' => 1,
+            'profile_picture_type' => 5,
+        ]);
+        User::factory()->create([
+            'username' => 'Zoé',
+            'filiere' => 'IDE',
+            'year' => 1,
+            'profile_picture_type' => 1,
+        ]);
+        User::factory()->create([
+            'username' => 'Charlie',
+            'filiere' => 'IGI',
+            'year' => 3,
+            'profile_picture_type' => 1,
+        ]);
     }
 }

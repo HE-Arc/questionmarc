@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'filiere' => 'ISC',
-            'year' => '2021',
+            'year' => '1',
             'profile_picture_type' => 1,
         ];
     }
