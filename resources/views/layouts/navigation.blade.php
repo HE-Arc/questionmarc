@@ -37,10 +37,10 @@
                 @guest
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
                         <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                            {{ __('Login') }}
+                            {{ __('Connexion') }}
                         </x-nav-link>
                         <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                            {{ __('Register') }}
+                            {{ __("S'enregistrer") }}
                         </x-nav-link>
                     </div>
                 @endguest
@@ -80,7 +80,7 @@
                                     <x-dropdown-link :href="route('logout')"
                                         onclick="event.preventDefault();
                                                         this.closest('form').submit();">
-                                        {{ __('Log Out') }}
+                                        {{ __('Déconnexion') }}
                                     </x-dropdown-link>
                                 </form>
                             </x-slot>
@@ -118,10 +118,10 @@
             <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
                 <div class="px-4">
                     <x-responsive-nav-link :href="route('login')" :active="request()->routeIs('login')">
-                        {{ __('Login') }}
+                        {{ __('Connexion') }}
                     </x-responsive-nav-link>
                     <x-responsive-nav-link :href="route('register')" :active="request()->routeIs('register')">
-                        {{ __('Register') }}
+                        {{ __("S'enregistrer") }}
                     </x-responsive-nav-link>
                 </div>
             </div>
