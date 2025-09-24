@@ -27,6 +27,13 @@ RUN apt-get update && apt-get install -y \
   && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
   && a2enmod rewrite
 
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+# Remplace le DocumentRoot dans les vhosts
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf || true \
+ && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/default-ssl.conf || true
+# (Optionnel) éviter le warning ServerName
+RUN echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf && a2enconf servername
+
 WORKDIR /var/www/html
 
 # Composer peut tourner en root
@@ -71,5 +78,4 @@ CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_cre
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN year INTEGER" || true \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN profile_picture_type INTEGER" || true \
  && apache2-foreground
-
 
