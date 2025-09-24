@@ -2,32 +2,29 @@
 FROM node:20 AS assets
 WORKDIR /app
 
-# 1) Copier package.json (pas le lock tout de suite)
+# Overrides avant install pour éviter le bug rollup/native
 COPY package.json ./
-
-# 2) Poser les overrides AVANT l'install
 RUN npm pkg set overrides.rollup="^4.20.0" \
  && npm pkg set overrides.esbuild="^0.21.5"
 
-# 3) Si ton repo a un package-lock.json, on le régénère avec les overrides
-#    -> on ne copie le lock qu'après avoir posé les overrides,
-#    -> puis on l'ignore en le remplaçant (pour être sûr que rollup passe en v4)
+# Si lock présent on le remplace, sinon install standard
 COPY package-lock.json* ./
 RUN rm -f package-lock.json && npm install --no-audit --no-fund
 
-# 4) Copier le reste du code et builder
+# Build Vite
 COPY . .
 RUN npm run build
 
-# --------- Stage 2: image PHP + Apache ----------
+# --------- Stage 2: PHP + Apache ----------
 FROM php:8.2-apache
 
+# Extensions & rewrite
 RUN apt-get update && apt-get install -y \
     libonig-dev libzip-dev unzip git curl sqlite3 libsqlite3-dev \
-  && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
-  && a2enmod rewrite
+ && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
+ && a2enmod rewrite
 
-# Serve Laravel depuis /public et activer .htaccess
+# Apache -> /public et AllowOverride
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
  && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/default-ssl.conf || true \
@@ -38,44 +35,50 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 WORKDIR /var/www/html
 
-# Composer peut tourner en root
+# Composer en root et chemins Laravel OK
 ENV COMPOSER_ALLOW_SUPERUSER=1
-
-# 👉 Forcer le chemin des vues compilées pour éviter realpath(false)
 ENV VIEW_COMPILED_PATH=/var/www/html/storage/framework/views
+
+# (Optionnel) logs Laravel dans les logs Render
 ENV LOG_CHANNEL=stderr
 ENV LOG_LEVEL=debug
-# Installer Composer
+
+# IMPORTANT: par défaut au build on force des drivers qui n'utilisent PAS la DB
+ENV CACHE_STORE=file
+ENV SESSION_DRIVER=file
+ENV QUEUE_CONNECTION=sync
+ENV MAIL_MAILER=log
+
+# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copier l'app Laravel
+# Code
 COPY . .
 
-# Créer les dossiers nécessaires AVANT composer install
+# Dossiers nécessaires avant composer install
 RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+ && chown -R www-data:www-data storage bootstrap/cache
 
+# (Facultatif) Faker dispo même sans dev deps (utile si un jour tu seedes)
 RUN composer require fakerphp/faker:^1.23 --no-interaction --no-progress --no-scripts
 
-# 👉 OPTION 1 (à tester d'abord) : laisser les scripts
-RUN composer install --no-dev --prefer-dist --optimize-autoloader
+# Install PHP deps SANS scripts (évite package:discover qui peut booter l'app)
+RUN composer install --no-dev --prefer-dist --optimize-autoloader --no-scripts
 
-RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear
+# Pas d'artisan ici (pas de DB à ce stade). Juste le lien storage:
+RUN php artisan storage:link || true
 
-# Lier storage + créer base SQLite
-RUN php artisan storage:link || true \
-    && mkdir -p database && touch database/database.sqlite
-
-# Copier le build Vite depuis le stage Node
+# Assets compilés
 COPY --from=assets /app/public/build ./public/build
 
-# Permissions finales
+# Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
 EXPOSE 80
 
-# Démarrage: migrations + seeding (démo) puis Apache
-CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_create_users_table.php \
+# --------- Démarrage: migrations SQLite "safe" + colonnes manquantes, PAS de seeding ---------
+CMD mkdir -p database && touch database/database.sqlite \
+ && php artisan migrate --force --path=database/migrations/0001_01_01_000000_create_users_table.php \
  && php artisan migrate --force --path=database/migrations/0001_01_01_000001_create_cache_table.php \
  && php artisan migrate --force --path=database/migrations/0001_01_01_000002_create_jobs_table.php \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN username TEXT" || true \
@@ -83,5 +86,3 @@ CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_cre
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN year INTEGER" || true \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN profile_picture_type INTEGER" || true \
  && apache2-foreground
-
-
