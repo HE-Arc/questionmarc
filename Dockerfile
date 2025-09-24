@@ -2,14 +2,21 @@
 FROM node:20 AS assets
 WORKDIR /app
 
-# (1) Copie uniquement les manifests pour maximiser le cache
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+# 1) Copie manifests pour profiter du cache
+COPY package.json package-lock.json* ./
+
+# 2) Install deps
 RUN npm ci || npm install
 
-# (2) Copie tout le code (on filtrera via .dockerignore)
+# 3) Forcer rollup 4 et esbuild compatible
+RUN npm pkg set overrides.rollup="^4.20.0" \
+ && npm pkg set overrides.esbuild="^0.21.5" \
+ && npm install
+
+# 4) Copier le reste du code
 COPY . .
 
-# Build des assets (génère public/build)
+# 5) Build des assets (génère public/build)
 RUN npm run build
 
 # --------- Stage 2: image PHP + Apache ----------
