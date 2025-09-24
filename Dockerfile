@@ -78,11 +78,9 @@ EXPOSE 80
 
 # --------- Démarrage: migrations SQLite "safe" + colonnes manquantes, PAS de seeding ---------
 CMD mkdir -p database && touch database/database.sqlite \
- && php artisan migrate --force --path=database/migrations/0001_01_01_000000_create_users_table.php \
- && php artisan migrate --force --path=database/migrations/0001_01_01_000001_create_cache_table.php \
- && php artisan migrate --force --path=database/migrations/0001_01_01_000002_create_jobs_table.php \
- && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN username TEXT" || true \
- && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN filiere TEXT" || true \
- && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN year INTEGER" || true \
- && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN profile_picture_type INTEGER" || true \
+ && sh -lc 'set -e; \
+    for f in $(ls database/migrations/*create_*_table.php 2>/dev/null | sort); do \
+      echo "→ Migrating $f"; \
+      php artisan migrate --force --path="$f" || echo "Skipping $f (SQLite incompat)"; \
+    done' \
  && apache2-foreground
