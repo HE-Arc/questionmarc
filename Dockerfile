@@ -45,6 +45,8 @@ COPY . .
 RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
+RUN composer require fakerphp/faker:^1.23 --no-interaction --no-progress --no-scripts
+
 # 👉 OPTION 1 (à tester d'abord) : laisser les scripts
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
