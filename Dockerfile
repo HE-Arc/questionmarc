@@ -27,12 +27,14 @@ RUN apt-get update && apt-get install -y \
   && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
   && a2enmod rewrite
 
+# Serve Laravel depuis /public et activer .htaccess
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-# Remplace le DocumentRoot dans les vhosts
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf || true \
- && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/default-ssl.conf || true
-# (Optionnel) éviter le warning ServerName
-RUN echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf && a2enconf servername
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/000-default.conf \
+ && sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/default-ssl.conf || true \
+ && printf "<Directory ${APACHE_DOCUMENT_ROOT}>\n\tAllowOverride All\n</Directory>\n" > /etc/apache2/conf-available/laravel.conf \
+ && a2enconf laravel \
+ && echo "ServerName localhost" > /etc/apache2/conf-available/servername.conf \
+ && a2enconf servername
 
 WORKDIR /var/www/html
 
@@ -41,7 +43,8 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # 👉 Forcer le chemin des vues compilées pour éviter realpath(false)
 ENV VIEW_COMPILED_PATH=/var/www/html/storage/framework/views
-
+ENV LOG_CHANNEL=stderr
+ENV LOG_LEVEL=debug
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
@@ -56,6 +59,8 @@ RUN composer require fakerphp/faker:^1.23 --no-interaction --no-progress --no-sc
 
 # 👉 OPTION 1 (à tester d'abord) : laisser les scripts
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
+
+RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear && php artisan view:clear
 
 # Lier storage + créer base SQLite
 RUN php artisan storage:link || true \
@@ -78,4 +83,5 @@ CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_cre
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN year INTEGER" || true \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN profile_picture_type INTEGER" || true \
  && apache2-foreground
+
 
