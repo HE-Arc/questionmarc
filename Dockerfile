@@ -22,7 +22,6 @@ RUN npm run build
 # --------- Stage 2: image PHP + Apache ----------
 FROM php:8.2-apache
 
-# Paquets système & extensions PHP nécessaires à Laravel + SQLite
 RUN apt-get update && apt-get install -y \
     libonig-dev libzip-dev unzip git curl sqlite3 libsqlite3-dev \
   && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
@@ -30,24 +29,30 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /var/www/html
 
+# Composer peut tourner en root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
-# Installer Composer (depuis l'image officielle)
+# Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copier l'app Laravel
 COPY . .
 
+# Créer les dossiers de cache AVANT composer install
+RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
 # Installer dépendances PHP (prod)
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
-# Créer base SQLite + liens storage
-RUN mkdir -p database && touch database/database.sqlite && php artisan storage:link || true
+# Lier storage + créer base SQLite
+RUN php artisan storage:link || true \
+    && mkdir -p database && touch database/database.sqlite
 
 # Copier le build Vite depuis le stage Node
 COPY --from=assets /app/public/build ./public/build
 
-# Permissions
+# Permissions finales
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
 EXPOSE 80
