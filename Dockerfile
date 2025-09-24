@@ -1,4 +1,5 @@
 # --------- Stage 1: build des assets avec Node ----------
+FROM node:20 AS assets
 WORKDIR /app
 
 # 1) Copier package.json (pas le lock tout de suite)
