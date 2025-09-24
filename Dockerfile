@@ -61,4 +61,8 @@ RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 EXPOSE 80
 
 # Démarrage: migrations + seeding (démo) puis Apache
-CMD php artisan migrate --force --seed && apache2-foreground
+CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_create_users_table.php \
+ && php artisan migrate --force --path=database/migrations/0001_01_01_000001_create_cache_table.php \
+ && php artisan migrate --force --path=database/migrations/0001_01_01_000002_create_jobs_table.php \
+ && php artisan db:seed --force \
+ && apache2-foreground
