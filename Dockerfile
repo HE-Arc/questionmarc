@@ -1,38 +1,56 @@
-# Utilise PHP 8.2 avec Apache
+# --------- Stage 1: build des assets avec Node ----------
+FROM node:20 AS assets
+WORKDIR /app
+
+# Copie le strict nécessaire pour profiter du cache Docker
+COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
+# Choisis le bon gestionnaire. Par défaut on utilise npm.
+RUN npm ci || npm install
+
+# Copie le code nécessaire au build Vite
+COPY vite.config.* ./
+COPY resources ./resources
+COPY public ./public
+
+# Vite a besoin du manifeste Laravel pour mettre le build au bon endroit (public/build)
+# Si ton projet référence d'autres fichiers (ex. tailwind.config, postcss.config), copie-les aussi :
+COPY tailwind.config.* postcss.config.* ./. 2>/dev/null || true
+
+# Build des assets (génère public/build)
+RUN npm run build
+
+# --------- Stage 2: image PHP + Apache ----------
 FROM php:8.2-apache
 
-# Installe les extensions nécessaires à Laravel
+# Paquets système & extensions PHP nécessaires à Laravel + SQLite
 RUN apt-get update && apt-get install -y \
     libonig-dev libzip-dev unzip git curl sqlite3 libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath
+  && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip bcmath \
+  && a2enmod rewrite
 
-# Active mod_rewrite pour Laravel
-RUN a2enmod rewrite
-
-# Copie le code dans le container
 WORKDIR /var/www/html
-COPY . .
 
-# Installe Composer
+# Installer Composer (depuis l'image officielle)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Installe les dépendances PHP
+# Copier l'app Laravel
+COPY . .
+
+# Installer dépendances PHP (prod)
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
-# Crée fichier SQLite et migrations
-RUN mkdir -p database && touch database/database.sqlite
+# Créer base SQLite + liens storage
+RUN mkdir -p database && touch database/database.sqlite && php artisan storage:link || true
 
-# Build du front (si ton projet utilise Vite)
-RUN apt-get install -y nodejs npm \
-    && npm install \
-    && npm run build \
-    && rm -rf node_modules
+# Copier le build Vite depuis le stage Node
+# Vite met le résultat dans /app/public/build
+COPY --from=assets /app/public/build ./public/build
 
-# Permissions storage/cache
-RUN chown -R www-data:www-data storage bootstrap/cache database
+# Permissions
+RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
-# Expose le port 80
+# Expose port 80
 EXPOSE 80
 
-# Commande de démarrage
+# Démarrage: migrations + seeding (démo) puis Apache
 CMD php artisan migrate --force --seed && apache2-foreground
