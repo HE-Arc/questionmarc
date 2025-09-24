@@ -70,6 +70,6 @@ CMD php artisan migrate --force --path=database/migrations/0001_01_01_000000_cre
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN filiere TEXT" || true \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN year INTEGER" || true \
  && sqlite3 /var/www/html/database/database.sqlite "ALTER TABLE users ADD COLUMN profile_picture_type INTEGER" || true \
- && php artisan db:seed --force \
  && apache2-foreground
+
 
