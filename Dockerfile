@@ -32,17 +32,20 @@ WORKDIR /var/www/html
 # Composer peut tourner en root
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
+# 👉 Forcer le chemin des vues compilées pour éviter realpath(false)
+ENV VIEW_COMPILED_PATH=/var/www/html/storage/framework/views
+
 # Installer Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copier l'app Laravel
 COPY . .
 
-# Créer les dossiers de cache AVANT composer install
+# Créer les dossiers nécessaires AVANT composer install
 RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
-# Installer dépendances PHP (prod)
+# 👉 OPTION 1 (à tester d'abord) : laisser les scripts
 RUN composer install --no-dev --prefer-dist --optimize-autoloader
 
 # Lier storage + créer base SQLite
