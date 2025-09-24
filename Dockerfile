@@ -2,19 +2,12 @@
 FROM node:20 AS assets
 WORKDIR /app
 
-# Copie le strict nécessaire pour profiter du cache Docker
+# (1) Copie uniquement les manifests pour maximiser le cache
 COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-# Choisis le bon gestionnaire. Par défaut on utilise npm.
 RUN npm ci || npm install
 
-# Copie le code nécessaire au build Vite
-COPY vite.config.* ./
-COPY resources ./resources
-COPY public ./public
-
-# Vite a besoin du manifeste Laravel pour mettre le build au bon endroit (public/build)
-# Si ton projet référence d'autres fichiers (ex. tailwind.config, postcss.config), copie-les aussi :
-COPY tailwind.config.* postcss.config.* ./. 2>/dev/null || true
+# (2) Copie tout le code (on filtrera via .dockerignore)
+COPY . .
 
 # Build des assets (génère public/build)
 RUN npm run build
@@ -43,13 +36,11 @@ RUN composer install --no-dev --prefer-dist --optimize-autoloader
 RUN mkdir -p database && touch database/database.sqlite && php artisan storage:link || true
 
 # Copier le build Vite depuis le stage Node
-# Vite met le résultat dans /app/public/build
 COPY --from=assets /app/public/build ./public/build
 
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 
-# Expose port 80
 EXPOSE 80
 
 # Démarrage: migrations + seeding (démo) puis Apache
