@@ -1,22 +1,21 @@
 # --------- Stage 1: build des assets avec Node ----------
-FROM node:20 AS assets
 WORKDIR /app
 
-# 1) Copie manifests pour profiter du cache
-COPY package.json package-lock.json* ./
+# 1) Copier package.json (pas le lock tout de suite)
+COPY package.json ./
 
-# 2) Install deps
-RUN npm ci || npm install
-
-# 3) Forcer rollup 4 et esbuild compatible
+# 2) Poser les overrides AVANT l'install
 RUN npm pkg set overrides.rollup="^4.20.0" \
- && npm pkg set overrides.esbuild="^0.21.5" \
- && npm install
+ && npm pkg set overrides.esbuild="^0.21.5"
 
-# 4) Copier le reste du code
+# 3) Si ton repo a un package-lock.json, on le régénère avec les overrides
+#    -> on ne copie le lock qu'après avoir posé les overrides,
+#    -> puis on l'ignore en le remplaçant (pour être sûr que rollup passe en v4)
+COPY package-lock.json* ./
+RUN rm -f package-lock.json && npm install --no-audit --no-fund
+
+# 4) Copier le reste du code et builder
 COPY . .
-
-# 5) Build des assets (génère public/build)
 RUN npm run build
 
 # --------- Stage 2: image PHP + Apache ----------
@@ -29,6 +28,8 @@ RUN apt-get update && apt-get install -y \
   && a2enmod rewrite
 
 WORKDIR /var/www/html
+
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Installer Composer (depuis l'image officielle)
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
