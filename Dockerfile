@@ -77,10 +77,36 @@ RUN chown -R www-data:www-data storage bootstrap/cache database public/build
 EXPOSE 80
 
 # --------- Démarrage: migrations SQLite "safe" + colonnes manquantes, PAS de seeding ---------
-CMD mkdir -p database && touch database/database.sqlite \
+CMD set -e \
+ && mkdir -p database && touch database/database.sqlite \
  && sh -lc 'set -e; \
     for f in $(ls database/migrations/*create_*_table.php 2>/dev/null | sort); do \
       echo "→ Migrating $f"; \
-      php artisan migrate --force --path="$f" || echo "Skipping $f (SQLite incompat)"; \
+      php artisan migrate --force --path="$f" || echo "Skipping $f"; \
     done' \
+ && if [ "${RUN_DEMO_SEED:-0}" = "1" ] && [ ! -f storage/.seeded ]; then \
+      echo "→ Seeding demo data"; \
+      # 1) User démo (email+mdp)
+      PASS=$(php -r 'echo password_hash("demo1234", PASSWORD_BCRYPT);') ; \
+      sqlite3 /var/www/html/database/database.sqlite "INSERT INTO users (name,email,password,remember_token,created_at,updated_at) \
+        SELECT 'Demo','demo@tomvivone.ch','${PASS}', lower(hex(randomblob(8))), datetime('now'), datetime('now') \
+        WHERE NOT EXISTS (SELECT 1 FROM users WHERE email='demo@tomvivone.ch');" ; \
+      # 2) Tables “modules” et “questions” de secours (si les migrations correspondantes ont été skippées)
+      sqlite3 /var/www/html/database/database.sqlite "CREATE TABLE IF NOT EXISTS modules ( \
+        id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, code TEXT, created_at TEXT, updated_at TEXT);" ; \
+      sqlite3 /var/www/html/database/database.sqlite "CREATE TABLE IF NOT EXISTS questions ( \
+        id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, body TEXT, module_id INTEGER, user_id INTEGER, \
+        created_at TEXT, updated_at TEXT);" ; \
+      # 3) Module + Question de démo
+      sqlite3 /var/www/html/database/database.sqlite "INSERT INTO modules (name,code,created_at,updated_at) \
+        SELECT 'Programmation Web','ISC-PRW', datetime('now'), datetime('now') \
+        WHERE NOT EXISTS (SELECT 1 FROM modules WHERE code='ISC-PRW');" ; \
+      MOD_ID=$(sqlite3 /var/www/html/database/database.sqlite "SELECT id FROM modules WHERE code='ISC-PRW' LIMIT 1;") ; \
+      USER_ID=$(sqlite3 /var/www/html/database/database.sqlite "SELECT id FROM users WHERE email='demo@tomvivone.ch' LIMIT 1;") ; \
+      sqlite3 /var/www/html/database/database.sqlite "INSERT INTO questions (title,body,module_id,user_id,created_at,updated_at) \
+        SELECT 'Comment déployer sur Render ?','Mini question de démo pour l\'accueil.', $MOD_ID, $USER_ID, datetime('now'), datetime('now') \
+        WHERE NOT EXISTS (SELECT 1 FROM questions WHERE title='Comment déployer sur Render ?');" ; \
+      touch storage/.seeded; \
+    fi \
  && apache2-foreground
+
